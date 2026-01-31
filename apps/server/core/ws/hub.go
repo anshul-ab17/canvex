@@ -1,9 +1,15 @@
 package ws
 
-type Hub struct{}
+type Hub struct{
 
-func NewHub() *Hub {
-	return &Hub{}
 }
 
-func (h *Hub) Run() {}
+func NewHub() *Hub {
+	return &Hub{
+		
+	}
+}
+
+func (h *Hub) Run() {
+
+}
