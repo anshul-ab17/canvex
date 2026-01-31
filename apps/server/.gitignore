@@ -1,0 +1,17 @@
+/bin/
+/dist/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+coverage.out
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+# Logs
+*.log
