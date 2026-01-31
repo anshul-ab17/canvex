@@ -2,7 +2,6 @@ package http
 
 import (
 	"net/http"
-
 	"server/core/ws"
 )
 
@@ -17,3 +16,4 @@ func NewRouter(hub *ws.Hub) http.Handler {
 
 	return mux
 }
+
