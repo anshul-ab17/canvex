@@ -13,12 +13,18 @@ var upgrader = websocket.Upgrader{
 }
 
 func ServeWS(hub *Hub, w http.ResponseWriter, r *http.Request) {
+	roomID := r.URL.Query().Get("roomId")
+	if roomID == "" {
+		http.Error(w, "roomId required", http.StatusBadRequest)
+		return
+	}
+
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		return
 	}
 
-	client := NewClient(conn, hub)
+	client := NewClient(conn, hub, roomID)
 	hub.Register <- client
 
 	go client.ReadPump()

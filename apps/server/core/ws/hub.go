@@ -1,33 +1,39 @@
 package ws
 
 type Hub struct {
+	Rooms      map[string]*Room
 	Register   chan *Client
 	Unregister chan *Client
-	Clients    map[*Client]bool
-	Broadcast  chan []byte
 }
 
 func NewHub() *Hub {
 	return &Hub{
+		Rooms:      make(map[string]*Room),
 		Register:   make(chan *Client),
 		Unregister: make(chan *Client),
-		Clients:    make(map[*Client]bool),
-		Broadcast:  make(chan []byte),
 	}
 }
 
 func (h *Hub) Run() {
 	for {
 		select {
+
 		case client := <-h.Register:
-			h.Clients[client] = true
+			roomID := client.RoomID
+
+			room, ok := h.Rooms[roomID]
+			if !ok {
+				room = NewRoom(roomID)
+				h.Rooms[roomID] = room
+				go room.Run()
+			}
+
+			room.Clients[client] = true
+			client.Room = room
 
 		case client := <-h.Unregister:
-			delete(h.Clients, client)
-
-		case msg := <-h.Broadcast:
-			for c := range h.Clients {
-				c.Send <- msg
+			if client.Room != nil {
+				delete(client.Room.Clients, client)
 			}
 		}
 	}

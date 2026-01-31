@@ -3,16 +3,19 @@ package ws
 import "github.com/gorilla/websocket"
 
 type Client struct {
-	Conn *websocket.Conn
-	Send chan []byte
-	Hub  *Hub
+	Conn   *websocket.Conn
+	Send   chan []byte
+	Hub    *Hub
+	Room   *Room
+	RoomID string
 }
 
-func NewClient(conn *websocket.Conn, hub *Hub) *Client {
+func NewClient(conn *websocket.Conn, hub *Hub, roomID string) *Client {
 	return &Client{
-		Conn: conn,
-		Send: make(chan []byte),
-		Hub:  hub,
+		Conn:   conn,
+		Send:   make(chan []byte),
+		Hub:    hub,
+		RoomID: roomID,
 	}
 }
 
@@ -27,7 +30,10 @@ func (c *Client) ReadPump() {
 		if err != nil {
 			break
 		}
-		c.Hub.Broadcast <- msg
+
+		if c.Room != nil {
+			c.Room.Broadcast <- msg
+		}
 	}
 }
 
